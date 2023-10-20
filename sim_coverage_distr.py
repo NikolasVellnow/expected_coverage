@@ -134,25 +134,3 @@ print(f'Map reads in {t3-t2} s')
 
 
 g2.plot_coverage_hist(bins=n_bins, read_length=L)
-
-"""
-t0 = timer()
-g1 = Genome_m1(10)
-t1 = timer()
-print(f'Initialize genome in {t1-t0} s')
-
-
-t2 = timer()
-g1.map_reads(num_reads=20, read_len=3)
-t3 = timer()
-print(f'Map reads in {t3-t2} s')
-
-
-
-# 436797999
-# 40000000
-
-
-g1.plot_coverage_hist(range(0, 100))
-
-"""
