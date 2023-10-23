@@ -1,10 +1,10 @@
 
-import itertools as it
 from timeit import default_timer as timer
 
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.random as rnd
+from scipy.stats import variation
 
 
 class Read:
@@ -42,7 +42,7 @@ class Genome_m1:
     def map_reads(self, num_reads, read_len=150):
         """ Simulates a read mapping process """
         tmp_read = Read(length=read_len)
-        for read in range(0, num_reads):
+        for _ in range(0, num_reads):
             rnd_pos = rnd.randint(0, self.size - (tmp_read.length-1))
             read_sites = np.arange(rnd_pos, rnd_pos+tmp_read.length)
             self.site_depths[read_sites] += 1
@@ -53,6 +53,12 @@ class Genome_m1:
         plt.hist(
             self.site_depths[read_length: (self.size-read_length):1], bins=bins, density=False)
         plt.show()
+
+    def cov_coeff_var(self, read_length=150):
+        "Calculates the coefficient of variation od the coverage values"
+        coeff_var = variation(
+            self.site_depths[read_length: (self.size-read_length):1], axis=0, ddof=1)
+        return coeff_var
 
 
 class Genome_m2:
@@ -89,7 +95,7 @@ class Genome_m2:
     def map_reads(self, num_reads, read_len=150):
         """ Simulates a read mapping process """
         tmp_read = Read(length=read_len)
-        for read in range(0, num_reads):
+        for _ in range(0, num_reads):
             rnd_float = rnd.random()  # generate random float between 0.0 and 1.0
             # Read has probability of p/(1+p) to come from GRC
             if rnd_float < (self.p/(1+self.p)):
@@ -111,26 +117,37 @@ class Genome_m2:
             self.site_depths[read_length: (self.size-read_length):1], bins=bins, density=False)
         plt.show()
 
-
-# variables for testing
-L = 150
-n_reads = 400000
-n_bins = np.arange(20, 140, 1)
-G_R = 1000000
-
-
-t0 = timer()
-g2 = Genome_m2(size=G_R, p=0.3)
-t1 = timer()
-print(f'Initialize genome in {t1-t0} s')
+    def cov_coeff_var(self, read_length=150):
+        "Calculates the coefficient of variation od the coverage values"
+        coeff_var = variation(
+            self.site_depths[read_length: (self.size-read_length):1], axis=0, ddof=1)
+        return coeff_var
 
 
-t2 = timer()
-g2.map_reads(num_reads=n_reads, read_len=L)
-t3 = timer()
-print(f'Map reads in {t3-t2} s')
+def main():
+    "main function"
+    # variables for testing
+    L = 150
+    n_reads = 400000
+    n_bins = np.arange(20, 140, 1)
+    G_R = 1000000
 
-# print(g2)
+    t0 = timer()
+    g2 = Genome_m2(size=G_R, p=0.3)
+    t1 = timer()
+    print(f'Initialize genome in {t1-t0} s')
+
+    t2 = timer()
+    g2.map_reads(num_reads=n_reads, read_len=L)
+    t3 = timer()
+    print(f'Map reads in {t3-t2} s')
+
+    # print(g2)
+
+    print(g2.cov_coeff_var(read_length=L))
+
+    g2.plot_coverage_hist(bins=n_bins, read_length=L)
 
 
-g2.plot_coverage_hist(bins=n_bins, read_length=L)
+if __name__ == "__main__":
+    main()
