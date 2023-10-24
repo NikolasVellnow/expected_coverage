@@ -25,8 +25,19 @@ class Genome:
         self.site_grc_mappings = np.full(size, None)
 
     def __str__(self) -> str:
-        site_list = list(zip(range(0, self.size, 1), self.site_grc_mappings))
-        site_list = map(str, site_list)
+        complete_site_list = list(
+            zip(range(0, self.size, 1), self.site_grc_mappings))
+        if self.size <= 20:
+            site_list = map(str, complete_site_list)
+        else:
+            center = int((self.size/2))
+            first_part = complete_site_list[0:5]
+            middle_part = complete_site_list[self.size -
+                                             center: (self.size - center + 5)]
+            last_part = complete_site_list[self.size-5: self.size]
+            first_part.extend(middle_part)
+            first_part.extend(last_part)
+            site_list = map(str, first_part)
         return "\n".join(site_list)
 
     def get_size(self) -> int:
@@ -107,17 +118,20 @@ class GenomeMapping:
         self.site_depths = np.zeros(self.genome.get_size(), dtype=np.int16)
 
     def __str__(self) -> str:
-        complete_site_list = list(zip(range(0, self.genome.get_size(), 1),
-                                      self.genome.get_site_grc_mappings(), self.site_depths))
+        complete_site_list = list(
+            zip(range(0, self.genome.get_size(), 1), self.genome.get_site_grc_mappings()))
         if self.genome.get_size() <= 20:
             site_list = map(str, complete_site_list)
         else:
-            first_part = complete_site_list[0:10]
-            second_part = complete_site_list[self.genome.get_size(
-            )-10: self.genome.get_size()]
-            first_part.extend(second_part)
+            center = int((self.genome.get_size()/2))
+            first_part = complete_site_list[0:5]
+            middle_part = complete_site_list[self.genome.get_size() -
+                                             center: (self.genome.get_size() - center + 5)]
+            last_part = complete_site_list[self.genome.get_size(
+            )-5: self.genome.get_size()]
+            first_part.extend(middle_part)
+            first_part.extend(last_part)
             site_list = map(str, first_part)
-
         return "\n".join(site_list)
 
     def map_reads(self, num_reads, read_len=150):
@@ -145,39 +159,6 @@ class GenomeMapping:
 
 class GenomeMappingM1(GenomeMapping):
     """ Class to represent read mapping process according to model 1 (null model)"""
-
-    # def __init__(self, genome: GenomeM1):
-    #     self.genome = genome
-    #     # numpy-array to save how often each site has been sequenced
-    #     self.site_depths = np.zeros(self.genome.get_size(), dtype=np.int16)
-
-    # def __str__(self) -> str:
-    #     site_list = list(zip(range(0, self.genome.get_size(), 1),
-    #                      self.genome.get_site_grc_mappings(), self.site_depths))
-    #     site_list = map(str, site_list)
-    #     return "\n".join(site_list)
-
-    def map_reads(self, num_reads, read_len=150):
-        """ Simulates a read mapping process """
-        tmp_read = Read(length=read_len)
-        for _ in range(0, num_reads):
-            rnd_pos = rnd.randint(
-                0, self.genome.get_size() - (tmp_read.length-1))
-            read_sites = np.arange(rnd_pos, rnd_pos+tmp_read.length)
-            self.site_depths[read_sites] += 1
-
-    def plot_coverage_hist(self, bins, read_length=150):
-        """ Plots a histogram of simulated read coverage """
-        # We exclude the beginning and end of genome to exclude edge effects
-        plt.hist(
-            self.site_depths[read_length: (self.genome.get_size()-read_length):1], bins=bins, density=False)
-        plt.show()
-
-    def cov_coeff_var(self, read_length=150):
-        "Calculates the coefficient of variation of the coverage values"
-        coeff_var = variation(
-            self.site_depths[read_length: (self.genome.get_size()-read_length):1], axis=0, ddof=1)
-        return coeff_var
 
 
 class GenomeMappingM2:
