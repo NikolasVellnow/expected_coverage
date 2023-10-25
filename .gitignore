@@ -4,7 +4,11 @@
 # ignore slurm log files
 slurm*.out
 
-# iignore figures
+# ignore figures
 *.pdf
 *.png
 *.jpeg
+
+# ignore data sheets
+*.ods
+*.xlsx
