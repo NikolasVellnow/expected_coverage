@@ -1,12 +1,19 @@
 #!/bin/bash
 
 
+# type in path to dir above folders with bam files
+path=$1
 
-for file in *.bam
-do	
-	FILENAME="$file"
-	FILENAME=${FILENAME%.bam*}
-	echo $FILENAME
-	
-	samtools fasta -@ 4 $file > "$FILENAME".fasta
+cd $path
+
+for d in */
+do
+	if [ "$d" != "subsets/" ]
+	then
+		for file in $d*dedup.bam
+		do
+			md5sum $file
+		done
+	fi
+
 done
