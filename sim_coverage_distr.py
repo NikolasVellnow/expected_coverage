@@ -19,9 +19,9 @@ class Genome:
     """ Class to represent reference genome generally"""
 
     def __init__(self, size=100000):
-        self.size = size
+        self.size = int(size)
         # numpy-array to save whether GRC maps at site (True) or not (False)
-        self.site_grc_mappings = np.full(size, None)
+        self.site_grc_mappings = np.full(self.size, None)
 
     def __str__(self) -> str:
         complete_site_list = list(
@@ -53,7 +53,7 @@ class GenomeM1(Genome):
 
     def __init__(self, size=10000):
         super().__init__(size)
-        self.site_grc_mappings = np.full(size, False)
+        self.site_grc_mappings = np.full(self.size, False)
 
 
 class GenomeM2(Genome):
@@ -102,6 +102,7 @@ class GenomeMapping:
 
     def map_reads(self, num_reads, read_len=150):
         """ Simulates a read mapping process generally """
+        num_reads = int(num_reads)
         # tmp_read = Read(length=read_len) # Do i need the Read class?
         for _ in range(0, num_reads):
             rnd_pos = rnd.randint(
@@ -112,6 +113,7 @@ class GenomeMapping:
     def plot_coverage_hist(self, bins, read_length=150):
         """ Plots a histogram of simulated read coverage """
         # We exclude the beginning and end of genome to exclude edge effects
+        read_length = int(read_length)
         plt.hist(
             self.site_depths[read_length: (self.genome.get_size()-read_length):1], bins=bins, density=False)
         plt.xlabel("Simulated sequencing coverage")
@@ -128,18 +130,29 @@ class GenomeMapping:
 
 class GenomeMappingM1(GenomeMapping):
     """ Class to represent read mapping process according to model 1 (null model)"""
-    pass
+
+    def plot_coverage_hist(self, bins, line_mean: float, read_length=150):
+        """ Plots a histogram of simulated read coverage """
+        # We exclude the beginning and end of genome to exclude edge effects
+        read_length = int(read_length)
+        plt.hist(
+            self.site_depths[read_length: (self.genome.get_size()-read_length):1], bins=bins, density=False)
+        plt.axvline(line_mean, color='k', linestyle='dashed', linewidth=2)
+        plt.xlabel("Simulated sequencing coverage")
+        plt.ylabel("Counts")
+        plt.show()
 
 
 class GenomeMappingM2(GenomeMapping):
     """ Class to represent reference genome according to model 2"""
 
     def __init__(self, genome: GenomeM2):
+        super().__init__(genome)
         self.genome = genome
-        self.site_depths = np.zeros(self.genome.get_size(), dtype=np.int16)
 
     def map_reads(self, num_reads, read_len=150):
         """ Simulates a read mapping process """
+        num_reads = int(num_reads)
         tmp_read = Read(length=read_len)
         for _ in range(0, num_reads):
             rnd_float = rnd.random()  # generate random float between 0.0 and 1.0
@@ -158,12 +171,17 @@ class GenomeMappingM2(GenomeMapping):
 
     # TODO Write method to save the data
 
-    # def plot_coverage_hist(self, bins, read_length=150):
-    #     """ Plots a histogram of simulated read coverage """
-    #     # We exclude the beginning and end of genome to exclude edge effects
-    #     plt.hist(
-    #         self.site_depths[read_length: (self.genome.get_size()-read_length):1], bins=bins, density=False)
-    #     plt.show()
+    def plot_coverage_hist(self, bins, line_mean: tuple[float, float], read_length=150):
+        """ Plots a histogram of simulated read coverage """
+        # We exclude the beginning and end of genome to exclude edge effects
+        read_length = int(read_length)
+        plt.hist(
+            self.site_depths[read_length: (self.genome.get_size()-read_length):1], bins=bins, density=False)
+        plt.axvline(line_mean[0], color='k', linestyle='dashed', linewidth=2)
+        plt.axvline(line_mean[1], color='k', linestyle='dashed', linewidth=2)
+        plt.xlabel("Simulated sequencing coverage")
+        plt.ylabel("Counts")
+        plt.show()
 
     # def cov_coeff_var(self, read_length=150):
     #     "Calculates the coefficient of variation of the coverage values"
@@ -176,13 +194,10 @@ def main():
     "main function"
     # variables for testing
     L = 150
-    n_reads = 400000
+    n_reads = 4.0 * 10**5
     n_bins = np.arange(20, 140, 1)
-    G_R = 1000000
+    G_R = 1.0 * 10**6
     rel_size_p = 0.3
-
-    read_1 = Read()
-    print(read_1)
 
     t0 = timer()
     g1 = GenomeM1(size=G_R)
@@ -220,8 +235,9 @@ def main():
     print(
         f'Coefficient of variation of Coverage of GenomeM2: {gm2.cov_coeff_var(read_length=L)}')
 
-    gm1.plot_coverage_hist(bins=n_bins, read_length=L)
-    # gm2.plot_coverage_hist(bins=n_bins, read_length=L)
+    # gm1.plot_coverage_hist(bins=n_bins, line_mean=60, read_length=L)
+    gm2.plot_coverage_hist(
+        bins=n_bins, line_mean=(46.15, 92.31), read_length=L)
 
     # TODO create useful test cases, e.g. several instances that are independtenly manipulated etc.
 
