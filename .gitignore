@@ -9,6 +9,9 @@ slurm*.out
 *.png
 *.jpeg
 
-# ignore table files
+# ignore other files types
+*.docx
 *.ods
 *.xlsx
+
+mapped_reads_subsets/
