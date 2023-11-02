@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# type in path to dir above folders with bam files
-path=$1
+# type in path to text file with list of samples
+SAMPLE_LIST=$1
 
-touch test.txt
+# type in output file name
+OUT=$2
+
+# number of samples
+NUM_SAMPLES=$3
+((MAX_COL=$NUM_SAMPLES+2))
+echo $MAX_COL
+
+touch $OUT
 
 # get average coverage for "typical" chromosome 3 = NC_031770.1
-samtools depth -r NC_031770.1 -f $1 | awk '{n++; for(i=3;i<=5;i++) sum[i]+=$i;}END{for(i=3;i<=5;i++) print "NC_031770.1","\011",sum[i]/n}' >> test.txt
+samtools depth -r NC_031770.1 -f $SAMPLE_LIST | awk '{n++; for(i=3;i<=($MAX_COL);i++) sum[i]+=$i;}END{for(i=3;i<=($MAX_COL);i++) print "NC_031770.1","\011",sum[i]/n}' >> $OUT
 
 # get average coverage for Z chromosome (ZZ => male, WZ => female)
-samtools depth -r NC_031799.1 -f $1 | awk '{n++; for(i=3;i<=5;i++) sum[i]+=$i;}END{for(i=3;i<=5;i++) print "NC_031799.1","\011",sum[i]/n}' >> test.txt
+samtools depth -r NC_031799.1 -f $SAMPLE_LIST | awk '{n++; for(i=3;i<=($MAX_COL);i++) sum[i]+=$i;}END{for(i=3;i<=($MAX_COL);i++) print "NC_031799.1","\011",sum[i]/n}' >> $OUT
 
 echo "done"
 
-# samtools depth -r NC_031799.1 -f $1 | head -100
