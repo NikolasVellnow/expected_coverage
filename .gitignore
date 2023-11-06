@@ -10,6 +10,7 @@ slurm*.out
 *.jpeg
 
 # ignore data files
+*_result.txt
 *.docx
 *.ods
 *.xlsx
