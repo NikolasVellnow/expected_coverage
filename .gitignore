@@ -11,6 +11,7 @@ slurm*.out
 
 # ignore data files
 *_result.txt*
+*result*
 *.docx
 *.ods
 *.xlsx
