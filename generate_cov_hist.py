@@ -63,7 +63,7 @@ def main():
     hist_df.columns = samples
     hist_df['cov_bin'] = hist_df.index
 
-    hist_df.to_csv(out_file, sep="\t")
+    hist_df.to_csv(out_file, sep="\t", index=False)
 
     # bin_ints = [int(x) for x in bins]
     # plt.hist(bins, bins=bin_ints, weights = bin_value_list[5])
