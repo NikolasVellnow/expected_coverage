@@ -2,18 +2,19 @@ import gzip
 import time
 from argparse import ArgumentParser
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 
-def add_bin_count(cov_value: str, bin_labels: list[str], bin_counts: np.ndarray):
+def add_bin_count(cov_value: int, bin_labels: list[int], bin_counts: np.ndarray):
     """ Adds one count to a histogram bin when that caoverage vaule was observed """
+    # if coverage value is <=1000, add count to corresponding bin
     try:
         idx = bin_labels.index(cov_value)
         bin_counts[idx] += 1
+    # if coverage value is >1000 (or just not in bin_counts), add count to "1001-bin"
     except ValueError:
-        print("Coverage value could not be found in bin labels. Maybe the coverage value was higher thatn 1000?")
+        print("Coverage value could not be found in bin labels. Maybe the coverage value was higher than 1000?")
         bin_counts[1001] += 1
     return bin_counts
 
@@ -38,7 +39,8 @@ def main():
     t1 = time.perf_counter()
     print("Parsing arguments: ", t1-t0, "s")
 
-    bins = [str(x) for x in range(0,1002)]
+    # create list of bins. Bin 1001 is for any value >1000
+    bins = list(range(0,1002))
 
     t2 = time.perf_counter()
     print("Preprocessing: ", t2-t1, "s")
@@ -51,6 +53,7 @@ def main():
                 samples = cov_values
                 bin_value_list = [np.zeros(1002) for sample in samples]
             else:
+                cov_values = list(map(int, cov_values))
                 for sample_value, sample_bin_values in zip(cov_values, bin_value_list):
                     add_bin_count(cov_value=sample_value,bin_labels=bins, bin_counts=sample_bin_values)
 
@@ -65,12 +68,6 @@ def main():
 
     hist_df.to_csv(out_file, sep="\t", index=False)
 
-    # bin_ints = [int(x) for x in bins]
-    # plt.hist(bins, bins=bin_ints, weights = bin_value_list[5])
-    # plt.xlim(xmin=0.0, xmax=150)
-    # plt.xlabel("Coverage for individual positions")
-    # plt.ylabel("Counts")
-    # plt.show()
 
 
 if __name__ == "__main__":
