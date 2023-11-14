@@ -8,12 +8,12 @@ import pandas as pd
 
 
 def add_bin_count(cov_value: str, bin_labels: list[str], bin_counts: np.ndarray):
-    """ Adds one count to a histogram bin when that caoverage vaule was observed """
+    """ Adds one count to a histogram bin when that coverage vaule was observed """
     try:
         idx = bin_labels.index(cov_value)
         bin_counts[idx] += 1
     except ValueError:
-        print("Coverage value could not be found in bin labels. Maybe the coverage value was higher thatn 1000?")
+        print("Coverage value could not be found in bin labels. Maybe the coverage value was higher than 1000?")
         bin_counts[1001] += 1
     return bin_counts
 
@@ -63,7 +63,7 @@ def main():
     hist_df.columns = samples
     hist_df['cov_bin'] = hist_df.index
 
-    hist_df.to_csv(out_file, sep="\t")
+    hist_df.to_csv(out_file, sep="\t", index=False)
 
     # bin_ints = [int(x) for x in bins]
     # plt.hist(bins, bins=bin_ints, weights = bin_value_list[5])
