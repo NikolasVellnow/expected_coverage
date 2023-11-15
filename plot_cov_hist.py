@@ -34,6 +34,7 @@ def plot_subplots(df, sample_list, n_rows, n_cols):
     figure.text(0.06, 0.5, 'Counts', ha='center', va='center', rotation='vertical')
 
     plt.xlim(xmin=0.0, xmax=200)
+    plt.yscale('log')
     plt.tight_layout(pad=3.3, w_pad=0.1, h_pad=0.2)
     plt.show()
 
