@@ -24,8 +24,8 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def get_samples_from_gzip(file_name: str) -> list[str]:
-    """ Gets the sample names from first line of gzip file"""
+def get_samples_from_file(file_name: str) -> list[str]:
+    """ Gets the sample names from first line of file"""
 
     with open(file_name, mode='rt', encoding="utf-8") as file:
         line = file.readline()
@@ -69,7 +69,7 @@ def main():
     print("Preprocessing: ", t2-t1, "s")
 
     
-    samples = get_samples_from_gzip(data_file)
+    samples = get_samples_from_file(data_file)
 
     bin_value_list = process_file(data_file, bins, samples)
     #bin_value_list = process_gzip_while(data_file, bins, samples)
