@@ -8,6 +8,7 @@ slurm*.out
 *.pdf
 *.png
 *.jpeg
+*.svg
 
 # ignore data files
 *_result.txt*
@@ -18,4 +19,7 @@ slurm*.out
 *.bam
 *.bai
 
+# ignore directories
 mapped_reads_subsets/
+presentation_group_meeting/
+

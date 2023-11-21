@@ -8,11 +8,11 @@ def parse_args():
     """ Parses arguments """
     parser = ArgumentParser()
     parser.add_argument("-i", "--input_file", required=True)
-    parser.add_argument("-o", "--output_file", required=False, default="cov_hists.txt")
+    parser.add_argument("-o", "--output_file", required=False, default="cov_hists.pdf")
     args = parser.parse_args()
     return args
 
-def plot_subplots(df, sample_list, n_rows, n_cols):
+def plot_subplots(df, sample_list, n_rows, n_cols, out_file):
 
     # start multiplot figure
     figure, axis = plt.subplots(n_rows, n_cols, sharex=True, sharey=True)
@@ -33,23 +33,24 @@ def plot_subplots(df, sample_list, n_rows, n_cols):
     figure.text(0.5, 0.04, 'Coverage for individual positions', ha='center', va='center')
     figure.text(0.06, 0.5, 'Counts', ha='center', va='center', rotation='vertical')
 
-    plt.xlim(xmin=0.0, xmax=200)
+    plt.xlim(xmin=0, xmax=300)
     plt.yscale('log')
     plt.tight_layout(pad=3.3, w_pad=0.1, h_pad=0.2)
-    plt.show()
+    #plt.show()
+    plt.savefig(out_file, format='pdf')
 
 
 def main():
     """ Main function """
     args = parse_args()
     input_file = args.input_file
+    output_file = args.output_file
     df = pd.read_csv(input_file, sep="\t", dtype='int32')
-    print(df.head())
+    print(df.tail())
 
     samples = sorted(list(df.columns)[:-1:])
-    print(samples)
 
-    plot_subplots(df, samples, 4, 5)
+    plot_subplots(df, samples, 4, 5, output_file)
 
 
 if __name__ == "__main__":
