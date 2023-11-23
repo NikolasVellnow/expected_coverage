@@ -12,6 +12,7 @@ slurm*.out
 
 # ignore data files
 *_result.txt*
+*test*
 *result*
 *.docx
 *.ods

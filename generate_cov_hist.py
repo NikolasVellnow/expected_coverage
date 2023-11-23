@@ -5,16 +5,17 @@ from argparse import ArgumentParser
 import numpy as np
 import pandas as pd
 
+MAX_COV_VALUE = 10000
 
 def add_bin_count(cov_value: int, bin_labels: list[int], bin_counts: np.ndarray):
     """ Adds one count to a histogram bin when that coverage vaule was observed """
-    # if coverage value is <=1000, add count to corresponding bin
+    # if coverage value is <=MAX_COV_VALUE add count to corresponding bin
     try:
         idx = bin_labels.index(cov_value)
         bin_counts[idx] += 1
-    # if coverage value is >1000 (or just not in bin_counts), add count to "1001-bin"
+    # if coverage value is >10000 (or just not in bin_counts), add coverage value to running sum in "10001-bin"
     except ValueError:
-        bin_counts[1001] += 1
+        bin_counts[MAX_COV_VALUE+1] += cov_value
     return bin_counts
 
 def parse_args():
@@ -39,35 +40,19 @@ def get_samples_from_gzip(file_name: str) -> list[str]:
 def process_gzip_for(file_name: str, bin_labels, sample_list):
     """ Processes gzip file line by line using a for loop """
 
-    bin_value_list = [np.zeros(1002) for sample in sample_list]
+    bin_value_list = [np.zeros(MAX_COV_VALUE+2) for sample in sample_list]
     with gzip.open(file_name, mode='rt') as file:
         for line in file:
             splitted_line = line.strip().split('\t')
             if splitted_line[0] != "CHROM":
                 cov_values = splitted_line[2::]
                 cov_values = list(map(int, cov_values))
+                # loops over coverage values for each sample with its corresponding np.array of so-far-accumulated bin counts
                 for sample_value, sample_bin_values in zip(cov_values, bin_value_list):
                     add_bin_count(cov_value=sample_value,bin_labels=bin_labels, bin_counts=sample_bin_values)
             
     return bin_value_list
 
-def process_gzip_while(file_name: str, bin_labels, sample_list):
-    """ Processes gzip file line by line using a for loop """
-
-    bin_value_list = [np.zeros(1002) for sample in sample_list]
-    with gzip.open(file_name, mode='rt') as file:
-        while True:
-            line = file.readline()
-            splitted_line = line.strip().split('\t')
-            if splitted_line[0] != "CHROM":
-                cov_values = splitted_line[2::]
-                cov_values = list(map(int, cov_values))
-                for sample_value, sample_bin_values in zip(cov_values, bin_value_list):
-                    add_bin_count(cov_value=sample_value,bin_labels=bin_labels, bin_counts=sample_bin_values)
-            if not line:
-                break
-            
-    return bin_value_list
 
 def main():
     """ Main function"""
@@ -82,7 +67,7 @@ def main():
     print("Parsing arguments: ", t1-t0, "s")
 
     # create list of bins. Bin 1001 is for any value >1000
-    bins = list(range(0,1002))
+    bins = list(range(0,MAX_COV_VALUE+2))
 
     t2 = time.perf_counter()
     print("Preprocessing: ", t2-t1, "s")
