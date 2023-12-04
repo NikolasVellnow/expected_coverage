@@ -2,7 +2,7 @@
 #SBATCH --partition=long
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=2-00:00:00 
+#SBATCH --time=1-00:00:00 
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=1G
 #SBATCH --job-name=gen_cov_hist_job
