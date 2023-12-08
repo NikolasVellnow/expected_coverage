@@ -15,6 +15,7 @@ slurm*.out
 *_result.txt.gz*
 *test*
 *results*1st*
+*result*1s*
 *.docx
 *.ods
 *.xlsx
