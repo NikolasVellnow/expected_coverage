@@ -19,6 +19,7 @@ slurm*.out
 *.xlsx
 *.bam
 *.bai
+*.fna
 
 # ignore directories
 mapped_reads_subsets/
